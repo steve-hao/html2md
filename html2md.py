@@ -6,13 +6,15 @@ from bs4 import Tag, NavigableString,  Comment, BeautifulSoup
 
 import argparse
 
+import urllib.request
+
 def html2md(html, **options):
     """Simple API"""
     proc = Processor(html,
                      **options)
     return proc.get_output()
 
-_process_tag = ['a', 'b', 'strong', 'blockquote', 'br', 'center', 'code', 'dl', 'dt', 'dd', 'div', 'em', 'i',
+_process_tag = ['a', 'b', 'strong', 'blockquote', 'br', 'center', 'code', 'dl', 'dt', 'dd', 'div', 'em', 'i','cite'
                    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'img', 'li', 'ol', 'ul', 'p', 'pre', 'tt','table','s','del']
 _ignore_tag = ['html','body', 'article', 'aside', 'footer', 'header', 'main', 'section', 'span','figure','dfn']  #该标签被忽略
 _skip_tag = ['head', 'nav', 'menu', 'menuitem','script'] #标签所包含内容完全抛弃
@@ -48,8 +50,8 @@ class Processor(object):
         self._options.update(kwargs)
     
         if self._options['ignore_emphasis']:
-            self.removeAttrs(_process_tag,'b','strong','i','em')
-            _ignore_tag.extend(['b','strong','i','em'])
+            self.removeAttrs(_process_tag,'b','strong','i','em','cite')
+            _ignore_tag.extend(['b','strong','i','em','cite'])
         else:
             if self._options['strikethrough']:
                 _process_tag.extend(['s','del'])
@@ -166,6 +168,8 @@ class Processor(object):
         return self.emphasis_mark + self._process(tag) + self.emphasis_mark
 
     _tag_i = _tag_em
+
+    _tag_cite = _tag_em
 
     def _tag_s(self, tag):
         return '~~' + self._process(tag) + '~~'
@@ -308,7 +312,7 @@ class Processor(object):
 
     def _tag_pre(self, tag):
 
-        return LF*2 + '```' + LF + tag.get_text().strip() + LF + '```' + LF*2
+        return LF*2 + '``` ' + (' '.join(tag['class']) if self._options['attrs'] and tag.has_attr('class') else '' )+ LF + tag.get_text().strip() + LF + '```' + LF*2
 
 
     def simpleAttrs(self, attrs):
@@ -348,17 +352,24 @@ class Processor(object):
             except KeyError:
                 pass
 
+def output():
+
+    if options.output_file == 'clipboard':
+        clipboard.setText(text)
+    else:
+        fp=open(options.output_file, 'w')
+        fp.write(text)
+        fp.close()
+
 
 def monitor_clipboard():
 
     global text
 
-    clipboard = app.clipboard()
-
     data = clipboard.mimeData()
     if  text != data.text() and data.hasHtml(): 
         text=html2md(data.html(),**vars(options))
-        clipboard.setText(text)
+        output()
 
 if __name__ == '__main__':
 
@@ -390,11 +401,21 @@ if __name__ == '__main__':
   
 
     app = QApplication([])
+    clipboard = app.clipboard()
 
     text=''
 
-    timer_clipboard = QTimer()  # 声明定时器
-    timer_clipboard.timeout.connect(monitor_clipboard) # 定时器触发monitor_clipboard方法
-    timer_clipboard.start(3000)  # 定时器触发间隔为3秒
+    if options.in_file == 'clipboard':
+        timer_clipboard = QTimer()  # 声明定时器
+        timer_clipboard.timeout.connect(monitor_clipboard) # 定时器触发monitor_clipboard方法
+        timer_clipboard.start(3000)  # 定时器触发间隔为3秒
+        app.exec_()
+    else:
+        if options.in_file.startswith('http://') or options.in_file.startswith('https://'):
+            response = urllib.request.urlopen(options.in_file)
+            data = response.read()
+        else:
+            data = open(options.in_file, 'rb').read()
 
-    app.exec_()
+        text=html2md(data,**vars(options))
+        output()
