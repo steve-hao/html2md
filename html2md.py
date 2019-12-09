@@ -14,7 +14,7 @@ def html2md(html, **options):
                      **options)
     return proc.get_output()
 
-_process_tag = ['a', 'b', 'strong', 'blockquote', 'br', 'center', 'code', 'dl', 'dt', 'dd', 'div', 'em', 'i','cite'
+_process_tag = ['a', 'b', 'strong', 'blockquote', 'br', 'center', 'code', 'dl', 'dt', 'dd', 'div', 'em', 'i','cite',
                    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'img', 'li', 'ol', 'ul', 'p', 'pre', 'tt','table','s','del']
 _ignore_tag = ['html','body', 'article', 'aside', 'footer', 'header', 'main', 'section', 'span','figure','dfn']  #该标签被忽略
 _skip_tag = ['head', 'nav', 'menu', 'menuitem','script'] #标签所包含内容完全抛弃
@@ -70,9 +70,9 @@ class Processor(object):
         if not self._options['table']:
             self.removeAttrs(_process_tag,'table')
  
-        self.ul_item_mark = '-' if options.ul_style_dash else '*'
-        self.emphasis_mark = '*' if options.em_style_asterisk else '_'
-        self.strong_mark = '__' if options.em_style_asterisk else '**'
+        self.ul_item_mark = '-' if self._options['ul_style_dash'] else '*'
+        self.emphasis_mark = '*' if self._options['em_style_asterisk'] else '_'
+        self.strong_mark = '__' if self._options['em_style_asterisk'] else '**'
 
     '''
     def _clear_soup(self):
