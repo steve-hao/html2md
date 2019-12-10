@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QApplication
 from bs4 import Tag, NavigableString,  Comment, BeautifulSoup 
 
 import argparse
+import os
 
 import urllib.request
 
@@ -19,7 +20,7 @@ _process_tag = ['a', 'b', 'strong', 'blockquote', 'br', 'center', 'code', 'dl', 
 _ignore_tag = ['html','body', 'article', 'aside', 'footer', 'header', 'main', 'section', 'span','figure','dfn']  #该标签被忽略
 _skip_tag = ['head', 'nav', 'menu', 'menuitem','script'] #标签所包含内容完全抛弃
 
-LF = '\r\n'
+LF = os.linesep
 
 class Processor(object):
     def __init__(self, html, **kwargs):
