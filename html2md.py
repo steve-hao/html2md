@@ -313,7 +313,12 @@ class Processor(object):
 
     def _tag_pre(self, tag):
 
-        return LF*2 + '``` ' + (' '.join(tag['class']) if self._options['attrs'] and tag.has_attr('class') else '' )+ LF + tag.get_text().strip() + LF + '```' + LF*2
+        pre_li = tag.find_all('li')
+        if pre_li:
+            for li in pre_li:
+                li.string = li.get_text() + '\n'
+                 
+        return LF*2 + '``` ' + (' '.join(tag['class']) if tag.has_attr('class') else '' )+ LF + tag.get_text().strip() + LF + '```' + LF*2
 
 
     def simpleAttrs(self, attrs):
