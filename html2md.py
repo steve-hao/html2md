@@ -39,7 +39,6 @@ class Processor(object):
             'ignore_emphasis': False,   
             'ignore_images': False, 
             'ignore_links': False,
-            'ignore_footnotes':False, 
             'def_list': True,   
             'table': True, 
             'strikethrough': True, 
@@ -386,8 +385,6 @@ if __name__ == '__main__':
         default=False, help='not include any formatting for images')
     parser.add_argument('-l', '--ignore-links', dest='ignore_links', action='store_true',
         default=False, help='not include any formatting for links')
-    parser.add_argument('-f', '--ignore_footnotes', dest='ignore_footnotes', action='store_true', 
-        default=False, help='Disable element attributes in the output (custom Markdown extension)')
     parser.add_argument('-d', '--def_list',  dest='def_list', action='store_false',
         default=True, help='Disable conversion of definition lists')
     parser.add_argument('-t', '--table', dest='table',  action='store_false',
@@ -395,12 +392,12 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--strikethrough', dest='strikethrough', action='store_true',
         default=True, help='Disable strike-through text')
     parser.add_argument('-a', '--attrs', dest='attrs', action='store_true', 
-        default=False, help='Disable element attributes in the output (custom Markdown extension)')
+        default=False, help='Enable element attributes in the link')
     parser.add_argument('-D', '--dash-unordered-list', dest='ul_style_dash', action='store_true',
         default=False, help='use a dash rather than a star for unordered list items')
     parser.add_argument('-E', '--asterisk-emphasis', dest='em_style_asterisk', action='store_true',
         default=False, help='use an asterisk rather than an underscore for emphasized text')
-    parser.add_argument('-o', '--output_file', nargs='+', dest='output_file', type=str, action='store', 
+    parser.add_argument('-o', '--output_file', nargs=1, dest='output_file', type=str, action='store', 
         default='clipboard', help='give output filename,default is out to clipbord')
     parser.add_argument('in_file', nargs='?', action='store', type=str, default="clipboard")
     options = parser.parse_args()
