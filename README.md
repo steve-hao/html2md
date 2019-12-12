@@ -29,11 +29,11 @@ optional arguments:
   -o OUTPUT_FILE , --output_file OUTPUT_FILE 
                         give output filename ,default is out to clipbord
 ```
-On default, this script will use clipboard as input,  converts the HTML contents (not text contents in clipboard) and place Markdown Text into clipboard Text buffer.
+On default, this script will monitor syste clipboard,  when find the HTML contents changed (not text contents in clipboard) ,it will convert and place Markdown Text into clipboard Text buffer. Then you can directly paste the Markdown code into any Editor
 
-Then you can directly paste the Markdown code into any Editor
+You can simply press Ctrl+C and Ctrl+V ,then zhe convert finished automaticlly. 
 
-Of cause ， you can make an URL or HTML file as input, and make a file as output.
+Of cause, you can make an URL or HTML file as input, and make a file as output.
 
 You can use it from within Python:
 
