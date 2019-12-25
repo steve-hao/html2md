@@ -29,9 +29,9 @@ optional arguments:
   -o OUTPUT_FILE , --output_file OUTPUT_FILE 
                         give output filename ,default is out to clipbord
 ```
-On default, this script will monitor syste clipboard,  when find the HTML contents changed (not text contents in clipboard) ,it will convert and place Markdown Text into clipboard Text buffer. Then you can directly paste the Markdown code into any Editor
+On default, this script will monitor syste clipboard,  when it find the HTML contents has been changed (not text contents in clipboard) ,it will convert and place Markdown Text into clipboard Text buffer. Then you can directly paste the Markdown code into any Editor
 
-You can simply press Ctrl+C and Ctrl+V ,then zhe convert finished automaticlly. 
+You can simply press Ctrl+C and Ctrl+V ,then the transformation work automaticlly. 
 
 Of cause, you can make an URL or HTML file as input, and make a file as output.
 

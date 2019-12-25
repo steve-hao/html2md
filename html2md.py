@@ -295,7 +295,7 @@ class Processor(object):
 
         parent = tag.find_parent(['ul','ol'])
 
-        indentation = self.ul_item_mark + '  ' if parent.name == 'ul' else str(parent.find_all('li',recursive=False).index(tag) + 1) + '.  '
+        indentation = self.ul_item_mark + '  ' if parent.name == 'ul' else str(tag.parent.find_all('li',recursive=False).index(tag) + 1) + '.  '
 
         return   indentation + '    '.join(self._process(tag).rstrip().splitlines(True)) + LF  # if tag.find_next_sibling('li') else LF*2)
 
