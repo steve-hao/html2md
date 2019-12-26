@@ -45,31 +45,38 @@ class Processor(object):
             'attrs': False, 
             'ul_style_dash': False, 
             'em_style_asterisk': False, 
+            'ignore_list': [],
+            'code_class': ''
 
         }
         self._options.update(kwargs)
     
         if self._options['ignore_emphasis']:
-            self.removeAttrs(_process_tag,'b','strong','i','em','cite')
+            self.removeProcess('b','strong','i','em','cite')
             _ignore_tag.extend(['b','strong','i','em','cite'])
         else:
             if self._options['strikethrough']:
                 _process_tag.extend(['s','del'])
 
         if self._options['ignore_images']:
-            self.removeAttrs(_process_tag,'img')
+            self.removeProcess('img')
             _ignore_tag.extend(['img'])
  
         if self._options['ignore_links']:
-            self.removeAttrs(_process_tag,'a')
+            self.removeProcess('a')
             _ignore_tag.extend(['a'])
  
         if not self._options['def_list']:
-            self.removeAttrs(_process_tag,'dl','dt','dd')
+            self.removeProcess('dl','dt','dd')
  
         if not self._options['table']:
-            self.removeAttrs(_process_tag,'table')
+            self.removeProcess('table')
  
+        if self._options['ignore_list']:
+            for l in self._options['ignore_list']:
+                self.removeProcess(l)
+            _ignore_tag.extend(self._options['ignore_list'])
+
         self.ul_item_mark = '-' if self._options['ul_style_dash'] else '*'
         self.emphasis_mark = '*' if self._options['em_style_asterisk'] else '_'
         self.strong_mark = '__' if self._options['em_style_asterisk'] else '**'
@@ -144,7 +151,8 @@ class Processor(object):
 
             attrs = tag.attrs.copy()
             mdtxt='[' + self._process(tag) + '](' + attrs['href']
-            title = attrs.get('title') if attrs.get('title') else ''
+            title = attrs.get(
+                'title') if attrs.get('title') else ''
             self.removeAttrs(attrs, 'href', 'title')
             attrs_str = self.simpleAttrs(attrs)  if self._options['attrs'] else ''   # 对属性进行处理，返回一个其他属性字符串
             s=(title + ' ' + attrs_str).strip()
@@ -196,7 +204,10 @@ class Processor(object):
 
     def _tag_div(self, tag):
         
-        return LF*2 + self._process(tag) + LF*2
+        if tag.has_attr('class') and self._options['code_class'] in tag['class']:
+            return self._tag_pre(tag)
+        else:
+            return LF*2 + self._process(tag) + LF*2
 
     def _tag_dl(self, tag):
 
@@ -278,6 +289,7 @@ class Processor(object):
         title = attrs.get('title') if attrs.get('title') else ''
         mdtxt='![' + (tag.get('alt') or title)  + '](' + tag['src']
 
+ 
         self.removeAttrs(attrs, 'src', 'title', 'alt')
         attrs_str = self.simpleAttrs(attrs) if self._options['attrs'] else '' 
 
@@ -347,7 +359,7 @@ class Processor(object):
                 attr_arr.append("%s=%s" % (k, v))
         return u"{{%s}}" % " ".join(attr_arr)
 
-
+ 
     def removeAttrs(self, attrs, *keys):
         if not attrs:
             return
@@ -356,6 +368,12 @@ class Processor(object):
                 del attrs[k]
             except KeyError:
                 pass
+
+    def removeProcess(self,  *keys):
+        global _process_tag
+
+        _process_tag = [s for s in _process_tag if s not in keys]
+        
 
 def output():
 
@@ -397,6 +415,10 @@ if __name__ == '__main__':
         default=False, help='use a dash rather than a star for unordered list items')
     parser.add_argument('-E', '--asterisk-emphasis', dest='em_style_asterisk', action='store_true',
         default=False, help='use an asterisk rather than an underscore for emphasized text')
+    parser.add_argument('-I', '--ignore_list', nargs='+', dest='ignore_list', type=str, action='store', 
+        help='ignore Tag in list')
+    parser.add_argument('-C', '--code_class', nargs='+', dest='code_class', type=str, action='store', 
+        help='if Div Tag with this class,then process it as code')
     parser.add_argument('-o', '--output_file', nargs=1, dest='output_file', type=str, action='store', 
         default='clipboard', help='give output filename,default is out to clipbord')
     parser.add_argument('in_file', nargs='?', action='store', type=str, default="clipboard")
